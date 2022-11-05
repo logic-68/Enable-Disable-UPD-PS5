@@ -1,4 +1,4 @@
-# enable-disable-UDP-PS5
+# enable-desable-UDP-PS5
 Enable/disable Updates PS5
 
 Simple portage of Enable/disable Updates from the PS4 collective scene
