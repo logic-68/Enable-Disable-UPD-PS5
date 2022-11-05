@@ -34,7 +34,8 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${D_CWD}/bin)	# static libs are archive
 
 # Headers
 include_directories	(SYSTEM "${D_PS5SDK}")
-include_directories	(SYSTEM "${D_PS5SDK}/include")
+#include_directories	(SYSTEM "${D_PS5SDK}/include")
+include_directories	(SYSTEM "${D_PS5SDK}/examples/enable-desable-UPD-PS5/include")
 
 add_executable(${PROJECT_NAME})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}.elf")

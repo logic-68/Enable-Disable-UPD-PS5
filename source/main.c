@@ -49,13 +49,16 @@ int payload_main(struct payload_args *args)
 
 	printf_notification("PS5 Blocker Update v %s\nPorted Logic-68 C.S", VERSION);
 
-	snprintf_s(src_path, sizeof(src_path), "/update/PS5UPDATE.PUP.temp", "");
+	snprintf_s(src_path, sizeof(src_path), "/update/PS5UPDATE.PUP", ".temp");
 
 	if (!file_exists(src_path))
 	{
 		f_unlink("/update/PS5UPDATE.PUP.temp");
 		f_rmdir("/update/PS5UPDATE.PUP.temp");
 		f_mkdir("/update/PS5UPDATE.PUP.temp", 777);
+
+		f_unlink("/update/eula.xml");
+		f_rmdir("/update/eula.xml");
 
 		f_unlink("/update/PS5UPDATE.PUP");
 		f_rmdir("/update/PS5UPDATE.PUP");
