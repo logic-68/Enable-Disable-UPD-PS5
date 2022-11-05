@@ -1,7 +1,7 @@
 #include <resolve.h>
 
 #define PATH_MAX 256
-#define VERSION "1.0"
+#define VERSION "1.0.1"
 
 // https://github.com/OSM-Made/PS4-Notify
 void printf_notification(const char *fmt, ...)
