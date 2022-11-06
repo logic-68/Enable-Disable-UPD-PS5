@@ -8,8 +8,8 @@ Simple portage of Enable/Disable Updates from the PS4 collective scene
 - [OpenOrbis](https://github.com/OpenOrbis)
 - [@notzecoxao](https://twitter.com/notzecoxao)
 
-# required
-Ubuntu 20.10
-Clang 15
-cmake >= 3.20 (my v3.24.2)
+# Required
+Ubuntu 20.10  
+Clang 15  
+cmake >= 3.20 (my v3.24.2)  
 
