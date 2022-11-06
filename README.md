@@ -1,7 +1,7 @@
-# enable-desable-UDP-PS5
-Enable/desable Updates PS5 v1.0.1
+# Enable/Disable UDP PS5
+Enable/disable Updates PS5 v1.0.1
 
-Simple portage of Enable/desable Updates from the PS4 collective scene
+Simple portage of Enable/Disable Updates from the PS4 collective scene
 
 # Credits
 - [PS5Dev](https://github.com/PS5Dev) 
