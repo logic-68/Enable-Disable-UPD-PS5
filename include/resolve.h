@@ -18,6 +18,8 @@
 #include <orbis/libkernel.h>
 #include <orbis/libSceNet.h>
 #include <orbis/libSceLibcInternal.h>
+#include <orbis/libSceSysmodule.h>
+#include <orbis/libSceUserService.h>
 
 #define SCE_NET_SOCKET_ABORT_FLAG_RCV_PRESERVATION 0x00000001
 #define SCE_NET_SOCKET_ABORT_FLAG_SND_PRESERVATION 0x00000002
@@ -29,12 +31,12 @@
 int (*f_sceNetCtlInit)(void);
 void (*f_sceNetCtlTerm)(void);
 int (*f_sceNetCtlGetInfo)(int code, SceNetCtlInfo *info);
-
 int *sceNetErrnoLoc(void);
 
 typeof(sceKernelLoadStartModule)* f_sceKernelLoadStartModule;
 typeof(sceKernelDebugOutText)* f_sceKernelDebugOutText;
 typeof(sceKernelUsleep)* f_sceKernelUsleep;
+typeof(sceKernelSleep)* f_sceKernelSleep;
 typeof(sceKernelSendNotificationRequest) * f_sceKernelSendNotificationRequest;
 typeof(scePthreadMutexLock)* f_scePthreadMutexLock;
 typeof(scePthreadMutexUnlock)* f_scePthreadMutexUnlock;
@@ -43,6 +45,9 @@ typeof(scePthreadMutexInit)* f_scePthreadMutexInit;
 typeof(scePthreadCreate)* f_scePthreadCreate;
 typeof(scePthreadMutexDestroy)* f_scePthreadMutexDestroy;
 typeof(scePthreadJoin)* f_scePthreadJoin;
+
+typeof(sceKernelReboot)* f_sceKernelReboot;
+
 typeof(socket)* f_socket;
 typeof(bind)* f_bind;
 typeof(listen)* f_listen;
@@ -63,6 +68,7 @@ typeof(lseek) * f_lseek;
 typeof(puts) * f_puts;
 typeof(mmap) * f_mmap;
 typeof(munmap) * f_munmap;
+
 typeof(sceNetSocket) * f_sceNetSocket;
 typeof(sceNetConnect) * f_sceNetConnect;
 typeof(sceNetHtons) * f_sceNetHtons;
@@ -79,6 +85,8 @@ typeof(sceNetGetsockname) * f_sceNetGetsockname;
 typeof(sceNetErrnoLoc) * f_sceNetErrnoLoc;
 typeof(sceNetRecv) * f_sceNetRecv;
 typeof(sceNetSetsockopt) * f_sceNetSetsockopt;
+
+typeof(vsprintf) * f_vsprintf;
 typeof(memset) * f_memset;
 typeof(sprintf) * f_sprintf;
 typeof(snprintf) * f_snprintf;
@@ -89,6 +97,7 @@ typeof(memcpy) * f_memcpy;
 typeof(strcpy) * f_strcpy;
 typeof(strncpy) * f_strncpy;
 typeof(sscanf) * f_sscanf;
+typeof(scanf) * f_scanf;
 typeof(malloc) * f_malloc;
 typeof(calloc) * f_calloc;
 typeof(strlen) * f_strlen;
@@ -98,9 +107,31 @@ typeof(strchr) * f_strchr;
 typeof(gmtime_s) * f_gmtime_s;
 typeof(time) * f_time;
 typeof(localtime) * f_localtime;
-typeof(vsprintf) * f_vsprintf;
 
+typeof(closedir) * f_closedir;
+typeof(opendir) * f_opendir;
+typeof(readdir) * f_readdir;
+typeof(fclose) * f_fclose;
+typeof(fopen) * f_fopen;
+typeof(strstr) * f_strstr;
+typeof(fseek) * f_fseek;
+typeof(ftell) * f_ftell;
+typeof(fread) * f_fread;
+typeof(usleep) * f_usleep;
+typeof(fputs) * f_fputs;
+typeof(fgetc) * f_fgetc;
+typeof(feof) * f_feof;
+typeof(fprintf) * f_fprintf;
+typeof(realloc) * f_realloc;
+typeof(seekdir) * f_seekdir;
 
+typeof(sceSysmoduleLoadModuleInternal) * f_sceSysmoduleLoadModuleInternal;
+
+typeof(sceUserServiceInitialize) * f_sceUserServiceInitialize;
+typeof(sceUserServiceGetInitialUser) * f_sceUserServiceGetInitialUser;
+typeof(sceUserServiceGetLoginUserIdList) * f_sceUserServiceGetLoginUserIdList;
+typeof(sceUserServiceGetUserName) * f_sceUserServiceGetUserName;
+typeof(sceUserServiceTerminate) * f_sceUserServiceTerminate;
 
 #define sce_net_errno (*f_sceNetErrnoLoc())
 

@@ -108,6 +108,7 @@ typedef uint32_t SceKernelModule;
 typedef int64_t SceKernelEqueue;
 typedef struct kevent SceKernelEvent;
 
+
 /* useless C / POSIX wrappers */
 int sceKernelStat(const char *path, void * buf);
 int sceKernelOpen(const char *path, int flags, int mode);
@@ -184,6 +185,10 @@ int sceKernelIccSetBuzzer(int mode);
 int sceKernelDebugOutText(int dbg_channel, const char* text);
 
 int sceKernelSendNotificationRequest(int device, SceNotificationRequest *req, size_t size, int blocking);
+
+
+void sceKernelReboot();
+
 
 #ifdef __cplusplus
 }

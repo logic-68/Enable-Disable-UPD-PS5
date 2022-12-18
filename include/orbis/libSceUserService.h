@@ -10,20 +10,30 @@
 
 #ifndef _ORBIS_LIBSCEUSERSERVICE_H_
 #define _ORBIS_LIBSCEUSERSERVICE_H_
-#pragma once
 
+#pragma once
 #include <stdint.h>
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+#define SCE_USER_SERVICE_MAX_LOGIN_USERS 4
+#define SCE_USER_SERVICE_MAX_USER_NAME_LENGTH 16
+
+typedef struct SceUserServiceLoginUserIdList{
+    int32_t userId[SCE_USER_SERVICE_MAX_LOGIN_USERS];
+} SceUserServiceLoginUserIdList;
+
 
 typedef int SceUserServiceUserId;
 
-int sceUserServiceInitialize(int *params);
+int sceUserServiceInitialize(void *);
+int sceUserServiceGetLoginUserIdList(SceUserServiceLoginUserIdList *);
+int sceUserServiceGetUserName(int32_t userId, char *userName, const size_t size);
+int sceUserServiceGetInitialUser(int32_t *userId);
 int sceUserServiceTerminate();
 int sceUserServiceGetInitialUser(SceUserServiceUserId *userId);
-
 
 #ifdef __cplusplus
 }

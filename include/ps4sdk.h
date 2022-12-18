@@ -15,6 +15,9 @@
 #include <orbis/libkernel.h>
 #include <orbis/libScePigletv2VSH.h>
 #include <orbis/libSceLibcInternal.h>
+
+#include <orbis/libSceSysUtil.h>
+
 #include <orbis/libSceCamera.h>
 #include <orbis/libSceNet.h>
 #include <orbis/libScePad.h>
