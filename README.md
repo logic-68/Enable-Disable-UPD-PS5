@@ -1,7 +1,7 @@
-# enable-desable-UDP-PS5
-Enable/desable Updates PS5 v1.0.1
+# Backup-SAV-PS5
+Backup-SAV-PS5 v1.0.0b
 
-Simple portage of Enable/desable Updates from the PS4 collective scene
+A simple backup extractor per user profile
 
 # Credits
 - [PS5Dev](https://github.com/PS5Dev) 
@@ -9,7 +9,7 @@ Simple portage of Enable/desable Updates from the PS4 collective scene
 - [@notzecoxao](https://twitter.com/notzecoxao)
 
 # required
-Ubuntu 20.10
-Clang 15
-cmake >= 3.20 (my v3.24.2)
+Ubuntu 18.04
+Clang 10
+
 
