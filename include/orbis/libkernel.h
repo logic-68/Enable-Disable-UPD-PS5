@@ -18,6 +18,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
+
 //#include <sys/event.h>
 
 #ifdef __cplusplus
@@ -185,7 +186,7 @@ int sceKernelIccSetBuzzer(int mode);
 int sceKernelDebugOutText(int dbg_channel, const char* text);
 
 int sceKernelSendNotificationRequest(int device, SceNotificationRequest *req, size_t size, int blocking);
-
+int sysctlbyname(const char * name, void * oldp, size_t * oldlenp, const void * newp, size_t newlen);
 
 void sceKernelReboot();
 

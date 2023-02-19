@@ -13,7 +13,7 @@
 
 #pragma once
 #include <stdint.h>
-
+#include <inttypes.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,7 +25,6 @@ typedef struct SceUserServiceLoginUserIdList{
     int32_t userId[SCE_USER_SERVICE_MAX_LOGIN_USERS];
 } SceUserServiceLoginUserIdList;
 
-
 typedef int SceUserServiceUserId;
 
 int sceUserServiceInitialize(void *);
@@ -34,6 +33,11 @@ int sceUserServiceGetUserName(int32_t userId, char *userName, const size_t size)
 int sceUserServiceGetInitialUser(int32_t *userId);
 int sceUserServiceTerminate();
 int sceUserServiceGetInitialUser(SceUserServiceUserId *userId);
+
+int getUserIDList(SceUserServiceLoginUserIdList *userIdList);
+int memset_s(void *s, rsize_t smax, int c, rsize_t n);
+char *getUserName(int32_t userId);
+void get_User_Name(char **userName, int32_t *userId);
 
 #ifdef __cplusplus
 }

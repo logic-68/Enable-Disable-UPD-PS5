@@ -1,7 +1,6 @@
 #ifndef __DEBUG_H__
 #define __DEBUG_H__
 
-
 #define printfsocket(format, ...)\
 do {\
   char __printfsocket_buffer[512];\
@@ -9,15 +8,7 @@ do {\
   f_sceNetSend(sock, __printfsocket_buffer, __printfsocket_size, 0);\
 } while(0)
 
-
 #include "time.h"
-
-void notify(char* message);
-unsigned char GetElapsed(unsigned long ResetInterval);
-
-extern int sock;
-extern time_t prevtime;
-
-#define SSIZET_FMT "%zd"
+void printf_notification(const char *fmt, ...);
 
 #endif

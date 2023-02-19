@@ -1,14 +1,12 @@
 #include <utils.h>
 
-#define VERSION "1.0.0b"
+#define VERSION "1.0.1"
+#define NAME_APP "ENABLE-DESABLE-UPD-PS5"
 #define DEBUG_SOCKET
 #define DEBUG_ADDR IP(192, 168, 1, 155);
 #define DEBUG_PORT 5655
-#define PROSPERO "savedata_prospero"
-#define HOME "/user/home"
 
 int sock;
-int32_t userId;
 
 int payload_main(struct payload_args *args)
 {
@@ -28,6 +26,8 @@ int payload_main(struct payload_args *args)
 	dlsym(libKernel, "scePthreadCreate", &f_scePthreadCreate);
 	dlsym(libKernel, "scePthreadMutexDestroy", &f_scePthreadMutexDestroy);
 	dlsym(libKernel, "scePthreadJoin", &f_scePthreadJoin);
+	dlsym(libKernel, "sceKernelGetFsSandboxRandomWord", &f_sceKernelGetFsSandboxRandomWord);
+	dlsym(libKernel, "sysctlbyname", &f_sysctlbyname);
 	dlsym(libKernel, "socket", &f_socket);
 	dlsym(libKernel, "bind", &f_bind);
 	dlsym(libKernel, "listen", &f_listen);
@@ -48,7 +48,6 @@ int payload_main(struct payload_args *args)
 	dlsym(libKernel, "puts", &f_puts);
 	dlsym(libKernel, "mmap", &f_mmap);
 	dlsym(libKernel, "munmap", &f_munmap);
-
 	dlsym(libKernel, "sceKernelReboot", &f_sceKernelReboot);
 
 	int libNet = f_sceKernelLoadStartModule("libSceNet.sprx", 0, 0, 0, 0, 0);
@@ -104,10 +103,16 @@ int payload_main(struct payload_args *args)
 	dlsym(libC, "usleep", &f_usleep);
 	dlsym(libC, "fputs", &f_fputs);
 	dlsym(libC, "fgetc", &f_fgetc);
+	dlsym(libC, "fgets", &f_fgets);
 	dlsym(libC, "feof", &f_feof);
 	dlsym(libC, "fprintf", &f_fprintf);
 	dlsym(libC, "realloc", &f_realloc);
 	dlsym(libC, "seekdir", &f_seekdir);
+	dlsym(libC, "strtok", &f_strtok);
+	dlsym(libC, "strtol", &f_strtol);
+	dlsym(libC, "atoi", &f_atoi);
+	dlsym(libC, "isspace", &f_isspace);
+	dlsym(libC, "ferror", &f_ferror);
 
 	int libNetCtl = f_sceKernelLoadStartModule("libSceNetCtl.sprx", 0, 0, 0, 0, 0);
 	dlsym(libNetCtl, "sceNetCtlInit", &f_sceNetCtlInit);
@@ -116,6 +121,9 @@ int payload_main(struct payload_args *args)
 
 	int libSysModule = f_sceKernelLoadStartModule("libSceSysmodule.sprx", 0, 0, 0, 0, 0);
 	dlsym(libSysModule, "sceSysmoduleLoadModuleInternal", &f_sceSysmoduleLoadModuleInternal);
+	dlsym(libSysModule, "sceSysmoduleUnloadModuleInternal", &f_sceSysmoduleUnloadModuleInternal);
+
+	int sysModule = f_sceSysmoduleLoadModuleInternal(SCE_SYSMODULE_INTERNAL_USER_SERVICE);
 
 	int libUserService = f_sceKernelLoadStartModule("libSceUserService.sprx", 0, 0, 0, 0, 0);
 	dlsym(libUserService, "sceUserServiceInitialize", &f_sceUserServiceInitialize);
@@ -133,57 +141,101 @@ int payload_main(struct payload_args *args)
 	sock = f_sceNetSocket("debug", AF_INET, SOCK_STREAM, 0);
 	f_sceNetConnect(sock, (struct sockaddr *)&server, sizeof(server));
 
-	char src_path[256], dst_path[256];
-	char usb_mount_path[64];
-	char userName[16];
+	char *userName, usb_mount_path[64], sourcedir[1024], destdir[1024], firmware[4];
+	int32_t userId;
+	uint32_t sdk_version;
+	size_t olden;
+	char snprintf_buf[] = {0};
 
-	int sysModule = f_sceSysmoduleLoadModuleInternal(SCE_SYSMODULE_INTERNAL_USER_SERVICE);
-	SceUserServiceLoginUserIdList userIdList;
-	memset_s(&userIdList, sizeof(SceUserServiceLoginUserIdList), 0, sizeof(SceUserServiceLoginUserIdList));
+	//Version PS5 by SISTRo
+	olden = sizeof(sdk_version);
+	f_sysctlbyname("kern.sdk_version", (char *)&sdk_version, &olden, NULL, 0);
+	f_snprintf(snprintf_buf, 0x10, "%2x.%03x", sdk_version >> 0x18, sdk_version >> 0xc & 0xff);
 
-	char *usb_mnt_path = getusbpath();
-	if (usb_mnt_path == NULL)
-	{
-		do
-		{
-			printf_notification("Please insert USB media in exfat format");
-			f_sceKernelSleep(7);
-			usb_mnt_path = getusbpath();
-		} while (usb_mnt_path == NULL);
-	}
-	f_sprintf(usb_mount_path, "%s", usb_mnt_path);
-	f_free(usb_mnt_path);
-	
+	char *fw = convert_firmware(snprintf_buf);
+	f_sprintf(firmware, "%s", fw);
+	f_free(fw);
+	//personalized greetings
 	if (sysModule == 0)
 	{
-		if (getUserIDList(&userIdList) == 0)
-		{
-			for (int i = 0; i < SCE_USER_SERVICE_MAX_LOGIN_USERS; i++)
-			{
-				if (userIdList.userId[i] != -1 && userIdList.userId[i] != 0)
-				{
-					userId = userIdList.userId[i];
-					f_sprintf(userName, "%s", getUserName(userIdList.userId[i]));
-					f_sprintf(dst_path, "%s/%s", usb_mount_path, userName);
-					f_mkdir(dst_path, 0777);
-					printf_notification("Welcome %s to\nBackup-SAV-PS5 V%s\n\nBy ★@Logic-68★", userName, VERSION);
-					f_sceKernelSleep(7);
-				}
-			}
-		}
+		get_User_Name(&userName, &userId);
+		printf_notification("Welcome %s to:\n%s V%s\n\nBy ★@Logic-68★", userName, NAME_APP, VERSION);
+		f_sceKernelSleep(7);
 	}
-	f_sprintf(src_path, "%s/%x/%s", HOME, userId, PROSPERO);
-	f_sprintf(dst_path, "%s/%s/%s", usb_mount_path, userName, PROSPERO);
-	f_mkdir(dst_path, 0777);
-	if (dir_exists(src_path))
+	sysModule = f_sceSysmoduleUnloadModuleInternal(SCE_SYSMODULE_INTERNAL_USER_SERVICE);
+	// If backup of blocker files is not present internally
+	if (!is_sav_blocker_internal())
 	{
-		copy_dir(src_path, dst_path);
+		// mounting the usb disk is mandatory
+		char *usb_mnt_path = getusbpath();
+		if (usb_mnt_path == NULL)
+		{
+			do
+			{
+				printf_notification("%s", "Please connect your usb media device");
+				f_sceKernelSleep(7);
+				usb_mnt_path = getusbpath();
+			} while (usb_mnt_path == NULL);
+		}
+		f_sprintf(usb_mount_path, "%s", usb_mnt_path);
+		f_free(usb_mnt_path);
+		// Verification of the PUP
+		if (if_pup_exist() && !is_fake_pup() && erase_folder(DEST_UPDATE))
+		{
+			printf_notification("WARNING!!!\nThe really Update Found\nDeletion successfully");
+			f_sceKernelSleep(7);
+		}
+		printf_notification("Activation of the update blocker Fw: %s\nPlease wait...", firmware);
+		f_sceKernelSleep(7);
+		// Blocker application
+		f_sprintf(sourcedir, "%s/%s/%s", usb_mount_path, SRC_UPDATES, firmware);
+		f_sprintf(destdir, "%s", DEST_UPDATE);
+		copy_dir(sourcedir, destdir);
+		// Copy backup files for app without usb
+		f_sprintf(destdir, "%s", BLOCKER_INTERNAL);
+		f_mkdir("/user/data/blocker", 0777);
+		copy_dir(sourcedir, destdir);
 	}
 	else
 	{
-		printf_notification("%s", "No backup for this account");
+		if (!is_update_blocked())
+		{
+			// Verification of the PUP
+			if (if_pup_exist() && !is_fake_pup() && erase_folder(DEST_UPDATE))
+			{
+				printf_notification("WARNING!!!\nThe really Update Found\nDeletion successfully");
+				f_sceKernelSleep(7);
+			}
+			char *usb_mnt_path = getusbpath();
+			if (usb_mnt_path != NULL)
+			{
+				// Cleaning of the internal blocker for new copy / new firmware detected
+				f_sprintf(usb_mount_path, "%s", usb_mnt_path);
+				f_free(usb_mnt_path);
+				erase_folder(BLOCKER_INTERNAL);
+				// Blocker application
+				f_sprintf(sourcedir, "%s/%s/%s", usb_mount_path, SRC_UPDATES, firmware);
+				f_sprintf(destdir, "%s", DEST_UPDATE);
+				copy_dir(sourcedir, destdir);
+				// Copy backup files for app without usb
+				f_sprintf(destdir, "%s", BLOCKER_INTERNAL);
+				copy_dir(sourcedir, destdir);
+			}
+			else
+			{
+				// Apply blocker from internal file backup
+				f_sprintf(sourcedir, "%s", BLOCKER_INTERNAL);
+				f_sprintf(destdir, "%s", DEST_UPDATE);
+				copy_dir(sourcedir, destdir);
+			}
+		}
+		else
+			erase_folder(DEST_UPDATE);
 	}
-	printf_notification("END");
-	printfsocket("EXIT");
+	// Checking if the blocker is now applied
+	if (!is_update_blocked())
+		printf_notification("Warning!!!\nPlease note your blocker is DESABLE");
+	else
+		printf_notification("Succesfully!!!\nPlease note your blocker is ENABLE");
 	return 0;
 }

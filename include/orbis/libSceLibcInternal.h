@@ -34,3 +34,4 @@ int sceLibcMspaceMallocStatsFast(OrbisMspace, OrbisMallocManagedSize *);
 size_t sceLibcMspaceMallocUsableSize(void *);
 int sceLibcMspaceMspaceisHeapEmpty(OrbisMspace);
 int snprintf_s(char *restrict buffer, rsize_t bufsz, const char *restrict format, ...);
+int isspace(int c);
