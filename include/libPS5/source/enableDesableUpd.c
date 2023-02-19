@@ -1,6 +1,4 @@
 #include <libPS5/enableDesableUpd.h>
-
-
 int if_pup_exist()
 {
     if (file_exists(IS_ORIGINAL_PUP))
@@ -20,7 +18,6 @@ int is_fake_pup()
     }
     return 0;
 }
-
 int is_update_blocked()
 {
     if (file_exists(IS_ORIGINAL_PUP))
@@ -35,7 +32,6 @@ int is_sav_blocker_internal()
     else
         return 0;
 }
-
 char *convert_firmware(char *sdk_version)
 {
     char *fw = f_malloc(sizeof(char) * 8);

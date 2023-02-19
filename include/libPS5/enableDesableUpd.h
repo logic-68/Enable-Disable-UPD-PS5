@@ -7,6 +7,7 @@
 #define DEST_UPDATE "/update"
 #define IS_ORIGINAL_PUP "/update/PS5UPDATE.PUP"
 #define BLOCKER_INTERNAL "/user/data/blocker"
+
 int if_pup_exist();
 int is_fake_pup();
 int is_update_blocked();

@@ -140,18 +140,15 @@ int payload_main(struct payload_args *args)
 	f_memset(server.sin_zero, 0, sizeof(server.sin_zero));
 	sock = f_sceNetSocket("debug", AF_INET, SOCK_STREAM, 0);
 	f_sceNetConnect(sock, (struct sockaddr *)&server, sizeof(server));
-
 	char *userName, usb_mount_path[64], sourcedir[1024], destdir[1024], firmware[4];
 	int32_t userId;
 	uint32_t sdk_version;
 	size_t olden;
 	char snprintf_buf[] = {0};
-
 	//Version PS5 by SISTRo
 	olden = sizeof(sdk_version);
 	f_sysctlbyname("kern.sdk_version", (char *)&sdk_version, &olden, NULL, 0);
 	f_snprintf(snprintf_buf, 0x10, "%2x.%03x", sdk_version >> 0x18, sdk_version >> 0xc & 0xff);
-
 	char *fw = convert_firmware(snprintf_buf);
 	f_sprintf(firmware, "%s", fw);
 	f_free(fw);
