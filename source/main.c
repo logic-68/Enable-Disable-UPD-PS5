@@ -1,6 +1,6 @@
 #include <utils.h>
 
-#define VERSION "1.0.1"
+#define VERSION "1.0.2"
 #define NAME_APP "ENABLE-DISABLE-UPD-PS5"
 #define DEBUG_SOCKET
 #define DEBUG_ADDR IP(192, 168, 1, 155);
