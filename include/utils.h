@@ -6,6 +6,6 @@
 #include <libPS4/strings.h>
 #include <libPS4/file.h>
 #include <libPS4/usb.h>
-#include <libPS5/enableDesableUpd.h>
+#include <libPS5/enableDisableUpd.h>
 
 #endif

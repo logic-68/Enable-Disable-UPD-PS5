@@ -16,7 +16,7 @@ OBJS     := $(patsubst $(SDIR)/%.c, $(ODIR)/%.o, $(CFILES)) $(patsubst $(SDIR)/%
 
 LIBS :=
 
-TARGET = Enable-Desable-UPD-PS5.elf
+TARGET = Enable-Disable-UPD-PS5.elf
 
 $(TARGET): $(ODIR) $(OBJS)
 	$(CC) crt0.s $(ODIR)/*.o -o $(TARGET) $(CFLAGS) $(LFLAGS) $(LIBS)

@@ -1,5 +1,5 @@
-# Enable-Desable-UPD-PS5
-Enable-Desable-UPD-PS5 v1.0.2
+# Enable-Disable-UPD-PS5
+Enable-Disable-UPD-PS5 v1.0.2
 
 Enable or disable your PS5 updates.
 

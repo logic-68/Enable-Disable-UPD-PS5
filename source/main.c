@@ -1,7 +1,7 @@
 #include <utils.h>
 
 #define VERSION "1.0.1"
-#define NAME_APP "ENABLE-DESABLE-UPD-PS5"
+#define NAME_APP "ENABLE-DISABLE-UPD-PS5"
 #define DEBUG_SOCKET
 #define DEBUG_ADDR IP(192, 168, 1, 155);
 #define DEBUG_PORT 5655
@@ -231,7 +231,7 @@ int payload_main(struct payload_args *args)
 	}
 	// Checking if the blocker is now applied
 	if (!is_update_blocked())
-		printf_notification("Warning!!!\nPlease note your blocker is DESABLE");
+		printf_notification("Warning!!!\nPlease note your blocker is DISABLE");
 	else
 		printf_notification("Succesfully!!!\nPlease note your blocker is ENABLE");
 	return 0;
