@@ -7,5 +7,5 @@
 #include <libPS4/file.h>
 #include <libPS4/usb.h>
 #include <libPS5/enableDisableUpd.h>
-
+#include <libPS5/ps5version.h>
 #endif

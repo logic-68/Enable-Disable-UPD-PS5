@@ -1,6 +1,6 @@
 #include <utils.h>
 
-#define VERSION "1.0.2"
+#define VERSION "1.0.3"
 #define NAME_APP "ENABLE-DISABLE-UPD-PS5"
 #define DEBUG_SOCKET
 #define DEBUG_ADDR IP(192, 168, 1, 155);
@@ -140,19 +140,15 @@ int payload_main(struct payload_args *args)
 	f_memset(server.sin_zero, 0, sizeof(server.sin_zero));
 	sock = f_sceNetSocket("debug", AF_INET, SOCK_STREAM, 0);
 	f_sceNetConnect(sock, (struct sockaddr *)&server, sizeof(server));
-	char *userName, usb_mount_path[64], sourcedir[1024], destdir[1024], firmware[4];
+
+	char *userName;
 	int32_t userId;
-	uint32_t sdk_version;
-	size_t olden;
-	char snprintf_buf[] = {0};
-	//Version PS5 by SISTRo
-	olden = sizeof(sdk_version);
-	f_sysctlbyname("kern.sdk_version", (char *)&sdk_version, &olden, NULL, 0);
-	f_snprintf(snprintf_buf, 0x10, "%2x.%03x", sdk_version >> 0x18, sdk_version >> 0xc & 0xff);
-	char *fw = convert_firmware(snprintf_buf);
-	f_sprintf(firmware, "%s", fw);
+
+	char *fw = get_firmware();
+	f_strcpy(firmware, fw);
 	f_free(fw);
-	//personalized greetings
+
+	// personalized greetings
 	if (sysModule == 0)
 	{
 		get_User_Name(&userName, &userId);
@@ -160,79 +156,56 @@ int payload_main(struct payload_args *args)
 		f_sceKernelSleep(7);
 	}
 	sysModule = f_sceSysmoduleUnloadModuleInternal(SCE_SYSMODULE_INTERNAL_USER_SERVICE);
-	// If backup of blocker files is not present internally
-	if (!is_sav_blocker_internal())
+
+	if (!is_sav_internal())
 	{
-		// mounting the usb disk is mandatory
-		char *usb_mnt_path = getusbpath();
-		if (usb_mnt_path == NULL)
+		if (dir_is_not_empty(DEST_UPDATE))
 		{
-			do
-			{
-				printf_notification("%s", "Please connect your usb media device");
-				f_sceKernelSleep(7);
-				usb_mnt_path = getusbpath();
-			} while (usb_mnt_path == NULL);
-		}
-		f_sprintf(usb_mount_path, "%s", usb_mnt_path);
-		f_free(usb_mnt_path);
-		// Verification of the PUP
-		if (if_pup_exist() && !is_fake_pup() && erase_folder(DEST_UPDATE))
-		{
-			printf_notification("WARNING!!!\nThe really Update Found\nDeletion successfully");
+			if (if_pup() && !is_fake())
+				printf_notification("Warning!!!\nPS5UPDATE.PUP found\nDeleting...");	
+			else if (if_pup() && is_fake())
+				printf_notification("Warning!!!\nBlocker internal files not found.\nReinstallation required");
 			f_sceKernelSleep(7);
 		}
-		printf_notification("Activation of the update blocker Fw: %s\nPlease wait...", firmware);
+		printf_notification("Installation blocker Fw:%s\nIn progress please wait...", firmware);
 		f_sceKernelSleep(7);
-		// Blocker application
-		f_sprintf(sourcedir, "%s/%s/%s", usb_mount_path, SRC_UPDATES, firmware);
-		f_sprintf(destdir, "%s", DEST_UPDATE);
-		copy_dir(sourcedir, destdir);
-		// Copy backup files for app without usb
-		f_sprintf(destdir, "%s", BLOCKER_INTERNAL);
-		f_mkdir("/user/data/blocker", 0777);
-		copy_dir(sourcedir, destdir);
 	}
 	else
 	{
-		if (!is_update_blocked())
+		char *usb_mnt_path = get_usb_path();
+		if (usb_mnt_path != NULL)
+			printf_notification("USB drive found. Update Fw:%s\nIn progress please wait...", firmware);
+		else
 		{
-			// Verification of the PUP
-			if (if_pup_exist() && !is_fake_pup() && erase_folder(DEST_UPDATE))
+			if (is_run())
 			{
-				printf_notification("WARNING!!!\nThe really Update Found\nDeletion successfully");
+				printf_notification("Stop blocker services...");
 				f_sceKernelSleep(7);
-			}
-			char *usb_mnt_path = getusbpath();
-			if (usb_mnt_path != NULL)
-			{
-				// Cleaning of the internal blocker for new copy / new firmware detected
-				f_sprintf(usb_mount_path, "%s", usb_mnt_path);
-				f_free(usb_mnt_path);
-				erase_folder(BLOCKER_INTERNAL);
-				// Blocker application
-				f_sprintf(sourcedir, "%s/%s/%s", usb_mount_path, SRC_UPDATES, firmware);
-				f_sprintf(destdir, "%s", DEST_UPDATE);
-				copy_dir(sourcedir, destdir);
-				// Copy backup files for app without usb
-				f_sprintf(destdir, "%s", BLOCKER_INTERNAL);
-				copy_dir(sourcedir, destdir);
+				if (stop_service())
+					printf_notification("Warning!!!\nPlease note your blocker is DISABLE");
 			}
 			else
 			{
-				// Apply blocker from internal file backup
-				f_sprintf(sourcedir, "%s", BLOCKER_INTERNAL);
-				f_sprintf(destdir, "%s", DEST_UPDATE);
-				copy_dir(sourcedir, destdir);
+				if (if_pup() && !is_fake())
+				{
+					printf_notification("Warning!!!\nPS5UPDATE.PUP found\nDeleting...");
+					f_sceKernelSleep(7);
+					erase_folder(DEST_UPDATE);
+				}		
+				printf_notification("Enabling blocker services...");
+				f_sceKernelSleep(7);
+				if (start_service())
+					printf_notification("Succesfully!!!\nPlease note your blocker is ENABLE");
 			}
+			return 0;
 		}
-		else
-			erase_folder(DEST_UPDATE);
+		f_sceKernelSleep(7);
 	}
-	// Checking if the blocker is now applied
-	if (!is_update_blocked())
-		printf_notification("Warning!!!\nPlease note your blocker is DISABLE");
-	else
-		printf_notification("Succesfully!!!\nPlease note your blocker is ENABLE");
+	usb_disk_required();
+	if (cleaner())
+	{
+		if (install_update())
+			printf_notification("Succesfully!!!\nPlease note your blocker is ENABLE\n");
+	}
 	return 0;
 }

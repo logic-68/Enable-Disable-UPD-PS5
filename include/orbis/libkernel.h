@@ -188,7 +188,7 @@ int sceKernelDebugOutText(int dbg_channel, const char* text);
 int sceKernelSendNotificationRequest(int device, SceNotificationRequest *req, size_t size, int blocking);
 int sysctlbyname(const char * name, void * oldp, size_t * oldlenp, const void * newp, size_t newlen);
 
-void sceKernelReboot();
+void sceKernelReboot(int reboot);
 
 
 #ifdef __cplusplus

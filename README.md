@@ -1,8 +1,14 @@
 # Enable-Disable-UPD-PS5
+
+Enable-Disable-UPD-PS5 v1.0.3
+- total rewrite
+- Principle of operation not changed
+- Rewrites the blocker internally when it was deleted by mistake
+- Changed the conversion of the string "kern.sdk_version" which seemed to be problematic
+
 Enable-Disable-UPD-PS5 v1.0.2
 
 Enable or disable your PS5 updates.
-
 - Now detects your firmware version and applies the necessary files from an updates folder, containing all system versions from your USB.
 - Requires for the first execution a USB key with the files necessary for each update.
 - After the first execution, the files necessary for your system version will be copied internally. This will enable or disable the payload. Simply start the payload as desired.(No longer need USB constantly)
@@ -17,7 +23,7 @@ Enable or disable your PS5 updates.
 - [@notzecoxao](https://twitter.com/notzecoxao)
 
 # required
-Ubuntu 18.04
-Clang 10
+Ubuntu 20.04
+gcc
 
 

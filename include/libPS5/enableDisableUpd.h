@@ -2,15 +2,19 @@
 #define ENABLEDISABLEUPD_H
 #include <utils.h>
 
-#define INIT_FILE "fw.ini"     // USB DRIVE
-#define SRC_UPDATES "/updates" // USB DRIVE
+#define UPDATEMODE_INTERNAL "/user/data/Enable-Disable-UPD-PS5/updatemode.elf"
+#define BLOCKER_INTERNAL "/user/data/Enable-Disable-UPD-PS5"
+#define IS_PUP "/update/PS5UPDATE.PUP"
+#define SRC_UPDATES "updates" // USB DRIVE
 #define DEST_UPDATE "/update"
-#define IS_ORIGINAL_PUP "/update/PS5UPDATE.PUP"
-#define BLOCKER_INTERNAL "/user/data/blocker"
 
-int if_pup_exist();
-int is_fake_pup();
-int is_update_blocked();
-int is_sav_blocker_internal();
-char *convert_firmware(char *sdk_version);
+int start_service();
+int stop_service();
+int is_run();
+int is_sav_internal();
+int if_pup();
+int is_fake();
+int install_update();
+int cleaner();
+
 #endif

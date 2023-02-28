@@ -2,5 +2,8 @@
 #define USB_H
 
 #include <utils.h>
-char *getusbpath();
+char usb_mount_path[64];
+
+char *get_usb_path();
+void usb_disk_required();
 #endif

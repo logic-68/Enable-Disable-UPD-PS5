@@ -1,6 +1,6 @@
 #include <libPS4/usb.h>
 
-char *getusbpath()
+char *get_usb_path()
 {
     char *retval = f_malloc(sizeof(char) * 10);
     char tmppath[64];
@@ -20,4 +20,19 @@ char *getusbpath()
         tmpusb[0] = '\0';
     }
     return NULL;
+}
+void usb_disk_required()
+{
+    char *usb_mnt_path = get_usb_path();
+    if (usb_mnt_path == NULL)
+    {
+        do
+        {
+            printf_notification("%s", "Please connect your usb media device");
+            f_sceKernelSleep(7);
+            usb_mnt_path = get_usb_path();
+        } while (usb_mnt_path == NULL);
+    }
+    f_sprintf(usb_mount_path, "%s", usb_mnt_path);
+    f_free(usb_mnt_path);
 }

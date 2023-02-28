@@ -145,7 +145,6 @@ int file_compare(char *fname1, char *fname2)
       }
     }
   }
-
   f_free(buffer1);
   f_free(buffer2);
   f_close(file1);
@@ -181,9 +180,45 @@ int erase_folder(char *dest_path)
   f_closedir(dir);
   f_rmdir(dest_path);
   if (!dir_exists(dest_path))
-    return 0;
-  else
     return 1;
+  else
+    return 0;
+}
+int dir_is_not_empty(char *dest_path)
+{
+  DIR *dir = f_opendir(dest_path);
+  struct dirent *dp;
+  struct stat info;
+  char src_file[1024];
+  int empty = 0;
+  if (dir)
+  {
+    while ((dp = f_readdir(dir)) != NULL)
+    {
+      if (!f_strcmp(dp->d_name, ".") || !f_strcmp(dp->d_name, ".."))
+        continue;
+      else
+      {
+        f_sprintf(src_file, "%s/%s", dest_path, dp->d_name);
+        if (!f_stat(src_file, &info))
+        {
+          if (S_ISDIR(info.st_mode))
+          {
+            empty = 1;
+            break;
+          }
+
+          else if (S_ISREG(info.st_mode))
+          {
+            empty = 1;
+            break;
+          }
+        }
+      }
+    }
+  }
+  f_closedir(dir);
+  return empty;
 }
 char *reading_param(char *init_file_path, char *param)
 {
